@@ -12,6 +12,7 @@ import { contentCache } from '@/utils/cache';
 import { countWordsInJSON } from '@/utils/format';
 import { Head, router } from '@inertiajs/react';
 import { PanelLeft, Search } from 'lucide-react';
+import { type WikiNote } from '@/Components/Editor/WikiLinkExtension';
 import { type JSONContent } from 'novel';
 import React, {
     lazy,
@@ -86,6 +87,11 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
     const editorAreaRef = useRef<HTMLDivElement>(null);
     const isPendingRef = useRef(false);
 
+    const allNotes = useMemo<WikiNote[]>(
+        () => notes.filter((n) => n.id > 0).map((n) => ({ slug: n.slug, title: n.title || 'Untitled' })),
+        [notes],
+    );
+
     // Sync sidebar list from Inertia (e.g. after drag reorder)
     useEffect(() => {
         if (!isPendingRef.current) setNotes(initNotes);
@@ -123,8 +129,26 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                 setPaletteOpen((p) => !p);
             }
         }
+        function onWikiNav(e: Event) {
+            const slug = (e as CustomEvent<string>).detail;
+            if (slug) router.visit(route('notes.show', { note: slug }));
+        }
+        function onWikiClick(e: MouseEvent) {
+            const el = (e.target as HTMLElement).closest<HTMLElement>('[data-wiki-link]');
+            const slug = el?.dataset.slug;
+            if (!slug) return;
+            e.preventDefault();
+            e.stopPropagation();
+            router.visit(route('notes.show', { note: slug }));
+        }
         window.addEventListener('keydown', onKey);
-        return () => window.removeEventListener('keydown', onKey);
+        window.addEventListener('wikilink:navigate', onWikiNav);
+        document.addEventListener('mousedown', onWikiClick, true);
+        return () => {
+            window.removeEventListener('keydown', onKey);
+            window.removeEventListener('wikilink:navigate', onWikiNav);
+            document.removeEventListener('mousedown', onWikiClick, true);
+        };
     }, []);
 
     const saveContent = useCallback((content: JSONContent) => {
@@ -472,6 +496,7 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                                     (note.content as JSONContent | null)
                                 }
                                 onChange={handleContentChange}
+                                allNotes={allNotes}
                             />
                         </Suspense>
                     </div>

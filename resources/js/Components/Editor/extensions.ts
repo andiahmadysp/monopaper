@@ -17,6 +17,7 @@ import {
     renderItems,
 } from 'novel';
 import { slashItems } from './slash-items';
+import { WikiLinkNode } from './WikiLinkExtension';
 
 // ─── Image compression (canvas) ──────────────────────────────────────────────
 async function compressImage(file: File, maxWidth = 1920, quality = 0.85): Promise<Blob> {
@@ -64,6 +65,7 @@ export const uploadFn = createImageUpload({
 });
 
 export const getExtensions = () => [
+    WikiLinkNode,
     StarterKit.configure({
         dropcursor: { color: 'var(--accent)', width: 2 },
     }),
