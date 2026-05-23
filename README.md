@@ -29,29 +29,67 @@ A high-performance, minimalist, and open-source note-taking application engineer
 ## Getting Started
 
 ### Prerequisites
+
+**Manual:**
+- PHP 8.2+
+- Composer
+- Node.js 18+ & NPM
+- SQLite (default) or MySQL
+
+**Docker:**
 - [Docker](https://docs.docker.com/engine/install/) (v20+)
 - [Docker Compose](https://docs.docker.com/compose/install/) (v2+)
-> All other dependencies are handled automatically inside the container.
 
 ### Installation
 
-1. **Clone the repository:**
+1. Clone the repository:
    ```bash
    git clone https://github.com/andiahmadysp/Monopaper.git
    cd Monopaper
    ```
-2. **Prepare environment files:**
+
+2. Copy environment file:
    ```bash
    cp .env.example .env
    ```
-   > If you're not using SQLite, edit .env to add required variables before proceeding.
 
-3. **Start the containers:**
+#### Option A: Manual
+
+3. Install dependencies:
+   ```bash
+   composer install
+   npm install
+   ```
+
+4. Generate key and run migrations:
+   ```bash
+   php artisan key:generate
+   touch database/database.sqlite
+   php artisan migrate --seed
+   ```
+
+5. Start development servers (two terminals):
+   ```bash
+   php artisan serve
+   ```
+   ```bash
+   npm run dev
+   ```
+
+#### Option B: Docker
+
+3. Start containers:
    ```bash
    docker-compose up -d --build
    ```
 
 Visit `http://localhost:8000` to start using **Monopaper**.
+
+---
+
+## Contributors
+
+- [rshsyari](https://github.com/rshsyari) - Docker support
 
 ---
 
