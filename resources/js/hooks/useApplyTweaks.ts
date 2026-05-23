@@ -25,8 +25,20 @@ export function useApplyTweaks(t: Tweaks) {
         root.setProperty('--d', String(density));
         const bw = t.borderSoftness === 'hairline' ? '0.5px' : '1px';
         root.setProperty('--border-w', bw);
-        const accent = t.accent || '#1f1d1a';
-        root.setProperty('--accent', accent);
-        root.setProperty('--accent-soft', `color-mix(in srgb, ${accent} 6%, transparent)`);
-    }, [t.fontSize, t.density, t.borderSoftness, t.accent]);
+        // Only apply accent override for charcoal preset — sepia/nord define their own accent via CSS class
+        if (!t.themePreset || t.themePreset === 'charcoal') {
+            const accent = t.accent || '#1f1d1a';
+            root.setProperty('--accent', accent);
+            const hex = accent.replace('#', '');
+            const r = parseInt(hex.slice(0, 2), 16);
+            const g = parseInt(hex.slice(2, 4), 16);
+            const b = parseInt(hex.slice(4, 6), 16);
+            const isLight = (r * 299 + g * 587 + b * 114) > 128000;
+            const pct = isLight ? '12%' : '6%';
+            root.setProperty('--accent-soft', `color-mix(in srgb, ${accent} ${pct}, transparent)`);
+        } else {
+            root.removeProperty('--accent');
+            root.removeProperty('--accent-soft');
+        }
+    }, [t.fontSize, t.density, t.borderSoftness, t.accent, t.themePreset]);
 }
