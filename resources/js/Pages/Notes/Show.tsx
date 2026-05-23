@@ -13,6 +13,7 @@ import { countWordsInJSON } from '@/utils/format';
 import { Head, router } from '@inertiajs/react';
 import { PanelLeft, Search } from 'lucide-react';
 import { type WikiNote } from '@/Components/Editor/WikiLinkExtension';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { type JSONContent } from 'novel';
 import React, {
     lazy,
@@ -91,6 +92,25 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
         () => notes.filter((n) => n.id > 0).map((n) => ({ slug: n.slug, title: n.title || 'Untitled' })),
         [notes],
     );
+
+    useSwipeGesture({
+        edgeLeft: 32,
+        threshold: 40,
+        bottomPercent: 30,
+        onSwipeRight: useCallback(() => {
+            if (window.innerWidth > 768) return;
+            setSidebarOpen(true);
+        }, []),
+    });
+    useSwipeGesture({
+        threshold: 80,
+        verticalTolerance: 60,
+        bottomPercent: 30,
+        onSwipeLeft: useCallback(() => {
+            if (window.innerWidth > 768) return;
+            if (sidebarOpen) setSidebarOpen(false);
+        }, [sidebarOpen]),
+    });
 
     // Sync sidebar list from Inertia (e.g. after drag reorder)
     useEffect(() => {
