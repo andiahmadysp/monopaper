@@ -45,7 +45,7 @@ async function onUpload(file: File): Promise<string> {
     const fd = new FormData();
     fd.append('image', compressed, file.name);
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
-    const res = await fetch('/docs/images', {
+    const res = await fetch('/notes/images', {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrf },
         body: fd,
