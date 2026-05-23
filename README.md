@@ -87,12 +87,6 @@ Visit `http://localhost:8000` to start using **Monopaper**.
 
 ---
 
-## Contributors
-
-- [rshsyari](https://github.com/rshsyari) - Docker support
-
----
-
 ## Contribution
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests to the project.
