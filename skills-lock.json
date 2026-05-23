@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "skills": {
+    "api-design-patterns": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "4c9048d7644cb28fcef996d042f9a8a4b6d5bd1131f40f720592b0247f1b928d"
+    },
+    "clean-code-principles": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "2c78185e24e4c5f1cdb4c0e7b08f85d635609e868336481eaaad262c54bbe5f3"
+    },
+    "laravel-best-practices": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "3f2351dc1821d430b6b58ce24175e0af11f5c11b234198bfc76a6702c05fe3ef"
+    },
+    "laravel-database-optimization": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "7e00d33fe4259f2dfb2ba81ddfa3ff241d4bb1ea93fcb59073011ba3a05d15b2"
+    },
+    "laravel-inertia-react": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "48153a3ab923ee477416dad35ee8cf814b2cb324829d140098a092f4e33dd2c6"
+    },
+    "prd-writing": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "08647b3331efdc290c4ca165faf43451aee859653b717ecab02337f325bfff70"
+    },
+    "react-vite-best-practices": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "bfd0d0cef40fd678863adcc5bc96a27ffb9c5cece99f56894dc22e5f36f37c6b"
+    },
+    "seo-best-practices": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "54c7724205cc7494703f0582fe42a35058d492f6cc492dd9c8708967c6c2aed4"
+    },
+    "state-management": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "86378a32860655bcc50132967276b3c41b65a6e1724b337ba22939623a261e3e"
+    },
+    "tailwind-best-practices": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "ee6787299efa53778918c98ce3e27485a721d6808d8b7973f77828e80d5674f7"
+    },
+    "ui-design": {
+      "source": "local",
+      "sourceType": "local",
+      "computedHash": "local-skill"
+    },
+    "web-design-guidelines": {
+      "source": "AsyrafHussin/agent-skills",
+      "sourceType": "github",
+      "computedHash": "3d34b066b23d6072a22f136520b93fe89937e6cd4aa85937786159c705f2ecbe"
+    }
+  }
+}

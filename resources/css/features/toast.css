@@ -1,0 +1,81 @@
+/* ============================================================
+   Toast notifications
+   ============================================================ */
+.toaster {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  pointer-events: auto;
+  cursor: default;
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+  transition: opacity 160ms ease, transform 160ms ease;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+}
+
+.toast.toast-in {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.toast-msg {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Success — green */
+.toast-success {
+  background: rgba(42, 122, 79, 0.12);
+  border-color: rgba(42, 122, 79, 0.22);
+  color: #1e6b45;
+}
+
+.dark .toast-success {
+  background: rgba(42, 122, 79, 0.18);
+  border-color: rgba(42, 122, 79, 0.30);
+  color: #4ade80;
+}
+
+/* Delete — red */
+.toast-delete {
+  background: rgba(179, 70, 56, 0.10);
+  border-color: rgba(179, 70, 56, 0.22);
+  color: #9a3728;
+}
+
+.dark .toast-delete {
+  background: rgba(179, 70, 56, 0.18);
+  border-color: rgba(179, 70, 56, 0.30);
+  color: #f87171;
+}
+
+/* Info — neutral surface */
+.toast-info {
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border-color: var(--border);
+  color: var(--fg-2);
+}
+

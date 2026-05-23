@@ -1,0 +1,101 @@
+/* CSS custom properties (consumed by non-Tailwind code) */
+:root {
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --surface-2: var(--color-surface-2);
+  --hover: var(--color-hover);
+  --active: var(--color-active);
+
+  --fg: var(--color-fg);
+  --fg-2: var(--color-fg-2);
+  --fg-3: var(--color-fg-3);
+  --fg-4: var(--color-fg-4);
+
+  --border-w: 1px;
+  --border: var(--color-border);
+  --border-2: var(--color-border-2);
+
+  --accent: var(--color-accent);
+  --accent-soft: var(--color-accent-soft);
+  --accent-fg: var(--color-accent-fg);
+
+
+  --fs: 14px;
+  --fs-xs: calc(var(--fs) * 0.786);
+  --fs-sm: calc(var(--fs) * 0.893);
+  --fs-md: var(--fs);
+  --fs-lg: calc(var(--fs) * 1.143);
+  --fs-xl: calc(var(--fs) * 1.571);
+  --fs-2xl: calc(var(--fs) * 2.429);
+
+  --d: 1;
+  --pad-card: calc(22px * var(--d));
+  --gap-card: calc(16px * var(--d));
+  --gap-row: calc(10px * var(--d));
+  --row-h: calc(32px * var(--d));
+
+  --r-sm: 6px;
+  --r-md: 9px;
+  --r-lg: 14px;
+}
+
+/* dark mode overrides */
+.dark {
+  --bg: #14110f;
+  --surface: #1c1917;
+  --surface-2: #232020;
+  --hover: rgba(250, 249, 247, 0.05);
+  --active: rgba(250, 249, 247, 0.08);
+  --fg: #f5f3ef;
+  --fg-2: #a8a298;
+  --fg-3: #78716a;
+  --fg-4: #44403a;
+  --border: #2a2724;
+  --border-2: #3a3631;
+  --accent: #f5f3ef;
+  --accent-soft: rgba(250, 249, 247, 0.07);
+  --accent-fg: #1c1917;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--fs);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  letter-spacing: -0.005em;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: default;
+  color: inherit;
+}
+

@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/geist-mono";
+
+@theme {
+  /* surfaces */
+  --color-bg: #fefefe;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f4f4;
+  --color-hover: rgba(28, 25, 23, 0.035);
+  --color-active: rgba(28, 25, 23, 0.06);
+
+  /* text */
+  --color-fg: #1f1d1a;
+  --color-fg-2: #6b665e;
+  --color-fg-3: #a8a298;
+  --color-fg-4: #d6d2c8;
+
+  /* borders */
+  --color-border: #eaeaea;
+  --color-border-2: #d4d4d4;
+
+  /* accent */
+  --color-accent: #1f1d1a;
+  --color-accent-soft: rgba(31, 29, 26, 0.06);
+  --color-accent-fg: #fafaf9;
+
+  /* danger */
+  --color-danger: #b34638;
+
+  /* fonts */
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* font sizes */
+  --text-xs: 11px;
+  --text-sm: 12.5px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 22px;
+  --text-2xl: 34px;
+
+  /* radii */
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 14px;
+}
+
+@import "./features/base.css";
+@import "./features/shell.css";
+@import "./features/modals.css";
+@import "./features/palette.css";
+@import "./features/toast.css";
+@import "./features/notes.css";

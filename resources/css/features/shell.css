@@ -1,0 +1,327 @@
+/* ============================================================
+   App shell
+   ============================================================ */
+.shell {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 24px 32px 24px;
+  gap: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Top nav
+   ============================================================ */
+.nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 0 2px;
+}
+
+.nav-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.nav-mid {
+  text-align: center;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+}
+
+.eyebrow {
+  font-size: 13px;
+  color: var(--fg-2);
+  letter-spacing: -0.005em;
+  font-variant-numeric: tabular-nums;
+}
+
+.greeting {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  line-height: 1.15;
+}
+
+.countdown {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 7px 14px;
+  border: var(--border-w) solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.countdown-num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown-label {
+  font-size: var(--fs-xs);
+  color: var(--fg-2);
+  letter-spacing: 0.01em;
+}
+
+.clock {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--r-md);
+  border: var(--border-w) solid var(--border);
+  background: var(--surface);
+  color: var(--fg-2);
+  font-size: var(--fs-xs);
+}
+
+.kbd-hint:hover {
+  background: var(--hover);
+}
+
+.cmd-icon-mobile {
+  display: none;
+}
+
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border: var(--border-w) solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg-2);
+}
+
+/* ============================================================
+   Grid layout
+   ============================================================ */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1.05fr 0.95fr;
+  grid-template-areas:
+    "cal cal cal  tsk tsk tsk"
+    "exp exp read read cap cap";
+  gap: var(--gap-card);
+  min-height: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--pad-card);
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.04);
+}
+
+.cal-area {
+  grid-area: cal;
+}
+
+.tsk-area {
+  grid-area: tsk;
+}
+
+.exp-area {
+  grid-area: exp;
+}
+
+.read-area {
+  grid-area: read;
+}
+
+.cap-area {
+  grid-area: cap;
+}
+
+.card-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+.card-action {
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  padding: 4px 9px;
+  border-radius: var(--r-sm);
+  border: var(--border-w) solid transparent;
+}
+
+.card-action:hover {
+  background: var(--hover);
+  border-color: var(--border);
+  color: var(--fg);
+}
+
+.card-actions {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.icon-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+}
+
+.icon-btn:hover {
+  background: var(--hover);
+  color: var(--fg);
+}
+
+/* ---- Card fullscreen ---- */
+.card-slot {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+}
+
+.card-slot > .card {
+  width: 100%;
+  height: 100%;
+}
+
+.card-slot-expand {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+.card-slot:hover .card-slot-expand,
+.expanded-card .card-slot-expand {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .card-slot-expand { display: none !important; }
+}
+
+@media (min-width: 769px) {
+  .grid.has-expanded > *:not(.expanded-card) {
+    display: none !important;
+  }
+  .grid.has-expanded > .expanded-card {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
+}
+
+/* ============================================================
+   Skeleton Loading State
+   ============================================================ */
+.skeleton-pulse {
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.skeleton-title {
+  height: 14px;
+  width: 70px;
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.skeleton-btn {
+  height: 24px;
+  width: 50px;
+  background: var(--border);
+  border-radius: var(--r-sm);
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hover);
+}
+
+.skeleton-circle {
+  height: 20px;
+  width: 20px;
+  background: var(--border);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-text {
+  height: 12px;
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.skeleton-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  flex-grow: 1;
+}
+
+.skeleton-calendar-cell {
+  background: var(--hover);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  min-height: 48px;
+}
