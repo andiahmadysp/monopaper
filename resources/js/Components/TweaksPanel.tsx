@@ -1,409 +1,218 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import type { Tweaks } from '@/types';
-import { X, Sliders, Moon, Sun, Feather, Eye } from 'lucide-react';
 import { useUIStore } from '@/store/ui';
 
-interface TweaksPanelProps {
+interface Props {
     tweaks: Tweaks;
-    onTweak: (key: keyof Tweaks, value: any) => void;
+    onTweak: (key: keyof Tweaks, value: unknown) => void;
 }
 
-export default function TweaksPanel({ tweaks, onTweak }: TweaksPanelProps) {
+const ACCENTS = [
+    { label: 'Charcoal', value: '#1f1d1a' },
+    { label: 'Indigo',   value: '#3b5bdb' },
+    { label: 'Sage',     value: '#2f6b4f' },
+    { label: 'Amber',    value: '#a8472a' },
+    { label: 'Pink',     value: '#f472b6' },
+    { label: 'Amethyst', value: '#7c3aed' },
+];
+
+const FONT_OPTS = [
+    { key: 'sans',  name: 'Sans Serif', style: 'system-ui,-apple-system,sans-serif' },
+    { key: 'serif', name: 'Serif',      style: 'Georgia,"Times New Roman",serif'    },
+    { key: 'mono',  name: 'Monospace',  style: 'var(--font-mono)'                   },
+] as const;
+
+const SIZE_OPTS  = [{ label: 'S', value: 'sm' }, { label: 'M', value: 'md' }, { label: 'L', value: 'lg' }];
+const LH_OPTS    = [{ label: 'Tight', value: 'tight' }, { label: 'Normal', value: 'normal' }, { label: 'Relaxed', value: 'relaxed' }];
+const WIDTH_OPTS = [{ label: 'Narrow', value: 'narrow' }, { label: 'Standard', value: 'normal' }, { label: 'Wide', value: 'wide' }];
+
+function Seg({ opts, value, onChange }: { opts: { label: string; value: string }[]; value: string; onChange: (v: string) => void }) {
+    return (
+        <div className="twk-segmented">
+            {opts.map(o => (
+                <button key={o.value} type="button"
+                    className={`twk-segment-btn${value === o.value ? ' active' : ''}`}
+                    onClick={() => onChange(o.value)}
+                >{o.label}</button>
+            ))}
+        </div>
+    );
+}
+
+function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+    return (
+        <label className="twk-switch">
+            <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
+            <span className="twk-switch-slider" />
+        </label>
+    );
+}
+
+export default function TweaksPanel({ tweaks, onTweak }: Props) {
     const [open, setOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState<'style' | 'editor' | 'preferences'>('style');
-    const panelRef = useRef<HTMLDivElement>(null);
-
     const appearance = useUIStore((s) => s.appearance);
-    const setAppear = useUIStore((s) => s.setAppear);
+    const setAppear  = useUIStore((s) => s.setAppear);
 
-    // Listen to message to open tweaks panel
     useEffect(() => {
-        const handleMessage = (e: MessageEvent) => {
-            if (e.data?.type === '__activate_edit_mode') {
-                setOpen(true);
-            } else if (e.data?.type === '__deactivate_edit_mode') {
-                setOpen(false);
-            }
+        const onMsg = (e: MessageEvent) => {
+            if (e.data?.type === '__activate_edit_mode') setOpen(true);
+            else if (e.data?.type === '__deactivate_edit_mode') setOpen(false);
         };
-        window.addEventListener('message', handleMessage);
-        return () => window.removeEventListener('message', handleMessage);
+        window.addEventListener('message', onMsg);
+        window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+        return () => window.removeEventListener('message', onMsg);
     }, []);
 
-    // Listen to keyboard shortcut Ctrl+Shift+A / Cmd+Shift+A
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
+        const onKey = (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'a' || e.key === 'A')) {
                 e.preventDefault();
-                setOpen((prev) => !prev);
+                setOpen(p => !p);
             }
         };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
     }, []);
 
-    // Close panel on ESC
     useEffect(() => {
         if (!open) return;
-        const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                setOpen(false);
-            }
-        };
-        window.addEventListener('keydown', handleEsc);
-        return () => window.removeEventListener('keydown', handleEsc);
+        const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+        window.addEventListener('keydown', onEsc);
+        return () => window.removeEventListener('keydown', onEsc);
     }, [open]);
+
+    const dismiss = () => {
+        setOpen(false);
+        window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+    };
 
     if (!open) return null;
 
-    const accents = [
-        { label: 'Charcoal', value: '#1f1d1a' },
-        { label: 'Indigo', value: '#4f46e5' },
-        { label: 'Sage', value: '#2e7d32' },
-        { label: 'Amber', value: '#d97706' },
-        { label: 'Crimson', value: '#be123c' },
-        { label: 'Amethyst', value: '#7c3aed' },
-    ];
-
-    const presets = [
-        { label: 'Charcoal', value: 'charcoal' as const },
-        { label: 'Warm Sepia', value: 'sepia' as const },
-        { label: 'Polar Nord', value: 'nord' as const },
-    ];
-
-    const toggleDark = () => {
-        onTweak('dark', !tweaks.dark);
-    };
+    const preset = tweaks.themePreset || 'charcoal';
 
     return (
         <>
-            {/* Backdrop for closing */}
-            <div className="twk-panel-backdrop" onClick={() => setOpen(false)} />
-
-            <div ref={panelRef} className="twk-panel">
-                {/* Header */}
+            <div className="twk-panel-backdrop" onClick={dismiss} />
+            <div className="twk-panel">
                 <div className="twk-hd">
-                    <span className="twk-hd-title">
-                        <Sliders size={16} strokeWidth={2.5} style={{ color: 'var(--accent)' }} />
-                        <span>Preferences</span>
-                    </span>
-                    <button
-                        className="twk-x"
-                        onClick={() => setOpen(false)}
-                        aria-label="Close preferences"
-                    >
-                        <X size={15} strokeWidth={2} />
+                    <span className="twk-hd-title">Preferences</span>
+                    <button className="twk-x" onClick={dismiss} aria-label="Close">
+                        <X size={14} strokeWidth={2} />
                     </button>
                 </div>
 
-                {/* Tabs Selector */}
-                <div className="twk-tabs-header">
-                    <button
-                        type="button"
-                        className={`twk-tab-header-btn ${activeTab === 'style' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('style')}
-                    >
-                        Style
-                    </button>
-                    <button
-                        type="button"
-                        className={`twk-tab-header-btn ${activeTab === 'editor' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('editor')}
-                    >
-                        Typography
-                    </button>
-                    <button
-                        type="button"
-                        className={`twk-tab-header-btn ${activeTab === 'preferences' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('preferences')}
-                    >
-                        Controls
-                    </button>
-                </div>
-
-                {/* Body Content */}
                 <div className="twk-body">
-                    {activeTab === 'style' && (
-                        <>
-                            <div className="twk-sect">Theme & Colors</div>
+                    {/* ── Appearance ── */}
+                    <div className="twk-switch-row">
+                        <span className="twk-label">Dark mode</span>
+                        <Toggle checked={!!tweaks.dark} onChange={v => onTweak('dark', v)} />
+                    </div>
 
-                            {/* Dark Mode Switch */}
-                            <div className="twk-switch-row">
-                                <span className="twk-label">Dark Mode</span>
-                                <label className="twk-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={!!tweaks.dark}
-                                        onChange={toggleDark}
-                                    />
-                                    <span className="twk-switch-slider"></span>
-                                </label>
-                            </div>
+                    <div className="twk-row">
+                        <span className="twk-label">Theme</span>
+                        <Seg opts={[
+                            { label: 'Default', value: 'charcoal' },
+                            { label: 'Sepia',   value: 'sepia'    },
+                            { label: 'Nord',    value: 'nord'     },
+                        ]} value={preset} onChange={v => onTweak('themePreset', v)} />
+                    </div>
 
-                            {/* Preset Theme Selection */}
-                            <div className="twk-row">
-                                <span className="twk-label">Aesthetic Theme</span>
-                                <div className="twk-segmented">
-                                    {presets.map((p) => (
-                                        <button
-                                            key={p.value}
-                                            type="button"
-                                            className={`twk-segment-btn ${
-                                                (tweaks.themePreset || 'charcoal') === p.value ? 'active' : ''
-                                            }`}
-                                            onClick={() => onTweak('themePreset', p.value)}
-                                        >
-                                            {p.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="twk-row">
+                        <span className="twk-label">Accent</span>
+                        <div className="twk-color-grid">
+                            {ACCENTS.map(a => (
+                                <button key={a.value} type="button"
+                                    className={`twk-accent-btn${tweaks.accent === a.value ? ' active' : ''}`}
+                                    style={{ backgroundColor: a.value }}
+                                    title={a.label}
+                                    onClick={() => onTweak('accent', a.value)}
+                                />
+                            ))}
+                        </div>
+                    </div>
 
-                            {/* Accent Color Circle Grid */}
-                            <div className="twk-row">
-                                <span className="twk-label">Accent Color</span>
-                                <div className="twk-color-grid">
-                                    {accents.map((acc) => (
-                                        <button
-                                            key={acc.value}
-                                            type="button"
-                                            className={`twk-accent-btn ${
-                                                tweaks.accent === acc.value ? 'active' : ''
-                                            }`}
-                                            style={{ backgroundColor: acc.value }}
-                                            title={acc.label}
-                                            onClick={() => onTweak('accent', acc.value)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="twk-divider" />
 
-                            <div className="twk-sect">UI Comfort</div>
+                    {/* ── Layout ── */}
+                    <div className="twk-row">
+                        <span className="twk-label">Spacing</span>
+                        <Seg opts={[
+                            { label: 'Compact',     value: 'compact'     },
+                            { label: 'Comfortable', value: 'comfortable' },
+                            { label: 'Roomy',       value: 'roomy'       },
+                        ]} value={tweaks.density} onChange={v => onTweak('density', v)} />
+                    </div>
 
-                            {/* Density Segmented */}
-                            <div className="twk-row">
-                                <span className="twk-label">Sidebar Spacing</span>
-                                <div className="twk-segmented">
-                                    {(['compact', 'comfortable', 'roomy'] as const).map((density) => (
-                                        <button
-                                            key={density}
-                                            type="button"
-                                            className={`twk-segment-btn ${
-                                                tweaks.density === density ? 'active' : ''
-                                            }`}
-                                            onClick={() => onTweak('density', density)}
-                                        >
-                                            {density.charAt(0).toUpperCase() + density.slice(1)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="twk-row">
+                        <span className="twk-label">Borders</span>
+                        <Seg opts={[
+                            { label: 'Hairline', value: 'hairline' },
+                            { label: 'Subtle',   value: 'subtle'   },
+                            { label: 'Crisp',    value: 'crisp'    },
+                        ]} value={tweaks.borderSoftness} onChange={v => onTweak('borderSoftness', v)} />
+                    </div>
 
-                            {/* Border Softness Segmented */}
-                            <div className="twk-row">
-                                <span className="twk-label">Borders Thickness</span>
-                                <div className="twk-segmented">
-                                    {(['hairline', 'subtle', 'crisp'] as const).map((border) => (
-                                        <button
-                                            key={border}
-                                            type="button"
-                                            className={`twk-segment-btn ${
-                                                tweaks.borderSoftness === border ? 'active' : ''
-                                            }`}
-                                            onClick={() => onTweak('borderSoftness', border)}
-                                        >
-                                            {border.charAt(0).toUpperCase() + border.slice(1)}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    )}
+                    <div className="twk-row">
+                        <div className="twk-row-between">
+                            <span className="twk-label">Font size</span>
+                            <span className="twk-label-val">{tweaks.fontSize}px</span>
+                        </div>
+                        <input type="range" className="twk-slider"
+                            min="12" max="20" step="1"
+                            value={tweaks.fontSize}
+                            onChange={e => onTweak('fontSize', parseInt(e.target.value))}
+                        />
+                    </div>
 
-                    {activeTab === 'editor' && (
-                        <>
-                            <div className="twk-sect">Typography Styles</div>
+                    <div className="twk-divider" />
 
-                            {/* Font Selection with visual previews */}
-                            <div className="twk-row">
-                                <span className="twk-label">Font Family</span>
-                                <div className="twk-font-grid">
-                                    <button
-                                        type="button"
-                                        className={`twk-font-btn ${appearance.font === 'sans' ? 'active' : ''}`}
-                                        style={{ fontFamily: 'var(--font-sans)' }}
-                                        onClick={() => setAppear('font', 'sans')}
-                                    >
-                                        <span className="twk-font-name">Sans Serif</span>
-                                        <span className="twk-font-preview">Outfit</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`twk-font-btn ${appearance.font === 'serif' ? 'active' : ''}`}
-                                        style={{ fontFamily: 'Georgia, serif' }}
-                                        onClick={() => setAppear('font', 'serif')}
-                                    >
-                                        <span className="twk-font-name">Serif</span>
-                                        <span className="twk-font-preview">Georgia</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className={`twk-font-btn ${appearance.font === 'mono' ? 'active' : ''}`}
-                                        style={{ fontFamily: 'var(--font-mono)' }}
-                                        onClick={() => setAppear('font', 'mono')}
-                                    >
-                                        <span className="twk-font-name">Monospace</span>
-                                        <span className="twk-font-preview">Geist</span>
-                                    </button>
-                                </div>
-                            </div>
+                    {/* ── Typography ── */}
+                    <div className="twk-row">
+                        <span className="twk-label">Font</span>
+                        <div className="twk-font-grid">
+                            {FONT_OPTS.map(f => (
+                                <button key={f.key} type="button"
+                                    className={`twk-font-btn${appearance.font === f.key ? ' active' : ''}`}
+                                    style={{ fontFamily: f.style }}
+                                    onClick={() => setAppear('font', f.key)}
+                                >{f.name}</button>
+                            ))}
+                        </div>
+                    </div>
 
-                            {/* Global Base Font Size Slider */}
-                            <div className="twk-row">
-                                <div className="flex justify-between items-center mb-1">
-                                    <span className="twk-label">Interface Font Size</span>
-                                    <span className="text-xs opacity-60 font-mono">{tweaks.fontSize}px</span>
-                                </div>
-                                <div className="twk-slider-container">
-                                    <input
-                                        type="range"
-                                        className="twk-slider"
-                                        min="12"
-                                        max="20"
-                                        step="1"
-                                        value={tweaks.fontSize}
-                                        onChange={(e) => onTweak('fontSize', parseInt(e.target.value))}
-                                    />
-                                </div>
-                            </div>
+                    <div className="twk-row">
+                        <span className="twk-label">Text size</span>
+                        <Seg opts={SIZE_OPTS} value={appearance.size} onChange={v => setAppear('size', v as any)} />
+                    </div>
 
-                            <div className="twk-sect">Editor Format</div>
+                    <div className="twk-row">
+                        <span className="twk-label">Line height</span>
+                        <Seg opts={LH_OPTS} value={appearance.lh} onChange={v => setAppear('lh', v as any)} />
+                    </div>
 
-                            {/* Editor font size (sm, md, lg) */}
-                            <div className="twk-row">
-                                <span className="twk-label">Writing Size</span>
-                                <div className="twk-segmented">
-                                    {(['sm', 'md', 'lg'] as const).map((size) => (
-                                        <button
-                                            key={size}
-                                            type="button"
-                                            className={`twk-segment-btn ${
-                                                appearance.size === size ? 'active' : ''
-                                            }`}
-                                            onClick={() => setAppear('size', size)}
-                                        >
-                                            {size.toUpperCase()}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="twk-row">
+                        <span className="twk-label">Width</span>
+                        <Seg opts={WIDTH_OPTS} value={appearance.width} onChange={v => setAppear('width', v as any)} />
+                    </div>
 
-                            {/* Line Height Selector */}
-                            <div className="twk-row">
-                                <span className="twk-label">Line Spacing</span>
-                                <div className="twk-segmented">
-                                    {([
-                                        { label: 'Tight', value: 'tight' as const },
-                                        { label: 'Normal', value: 'normal' as const },
-                                        { label: 'Relaxed', value: 'relaxed' as const },
-                                    ]).map((lh) => (
-                                        <button
-                                            key={lh.value}
-                                            type="button"
-                                            className={`twk-segment-btn ${
-                                                appearance.lh === lh.value ? 'active' : ''
-                                            }`}
-                                            onClick={() => setAppear('lh', lh.value)}
-                                        >
-                                            {lh.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="twk-divider" />
 
-                            {/* Content max-width */}
-                            <div className="twk-row">
-                                <span className="twk-label">Content Width</span>
-                                <div className="twk-segmented">
-                                    {([
-                                        { label: 'Narrow', value: 'narrow' as const },
-                                        { label: 'Standard', value: 'normal' as const },
-                                        { label: 'Wide', value: 'wide' as const },
-                                    ]).map((width) => (
-                                        <button
-                                            key={width.value}
-                                            type="button"
-                                            className={`twk-segment-btn ${
-                                                appearance.width === width.value ? 'active' : ''
-                                            }`}
-                                            onClick={() => setAppear('width', width.value)}
-                                        >
-                                            {width.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    )}
+                    {/* ── Editor controls ── */}
+                    <div className="twk-switch-row">
+                        <span className="twk-label">Focus mode</span>
+                        <Toggle checked={!!tweaks.focusMode} onChange={v => onTweak('focusMode', v)} />
+                    </div>
 
-                    {activeTab === 'preferences' && (
-                        <>
-                            <div className="twk-sect">Writing Controls</div>
+                    <div className="twk-switch-row">
+                        <span className="twk-label">Spellcheck</span>
+                        <Toggle checked={tweaks.spellCheck ?? true} onChange={v => onTweak('spellCheck', v)} />
+                    </div>
 
-                            {/* Focus Mode (distraction free toggle) */}
-                            <div className="twk-switch-row">
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="twk-label">Focus Mode</span>
-                                    <span style={{ fontSize: '10px', color: 'var(--fg-3)' }}>
-                                        Hide sidebar & topbar for distraction-free writing
-                                    </span>
-                                </div>
-                                <label className="twk-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={!!tweaks.focusMode}
-                                        onChange={(e) => onTweak('focusMode', e.target.checked)}
-                                    />
-                                    <span className="twk-switch-slider"></span>
-                                </label>
-                            </div>
-
-                            {/* Spellcheck Toggle */}
-                            <div className="twk-switch-row">
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="twk-label">Spellcheck</span>
-                                    <span style={{ fontSize: '10px', color: 'var(--fg-3)' }}>
-                                        Browser dictionary spellcheck highlighting
-                                    </span>
-                                </div>
-                                <label className="twk-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={tweaks.spellCheck ?? true}
-                                        onChange={(e) => onTweak('spellCheck', e.target.checked)}
-                                    />
-                                    <span className="twk-switch-slider"></span>
-                                </label>
-                            </div>
-
-                            {/* Word Count Display Toggle */}
-                            <div className="twk-switch-row">
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="twk-label">Word Counter</span>
-                                    <span style={{ fontSize: '10px', color: 'var(--fg-3)' }}>
-                                        Display word count and reading time footer
-                                    </span>
-                                </div>
-                                <label className="twk-switch">
-                                    <input
-                                        type="checkbox"
-                                        checked={tweaks.wordCount ?? true}
-                                        onChange={(e) => onTweak('wordCount', e.target.checked)}
-                                    />
-                                    <span className="twk-switch-slider"></span>
-                                </label>
-                            </div>
-                        </>
-                    )}
+                    <div className="twk-switch-row">
+                        <span className="twk-label">Word count</span>
+                        <Toggle checked={tweaks.wordCount ?? true} onChange={v => onTweak('wordCount', v)} />
+                    </div>
                 </div>
             </div>
         </>
