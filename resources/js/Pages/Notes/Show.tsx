@@ -11,7 +11,7 @@ import { NoteListItem, Note } from '@/types';
 import { contentCache } from '@/utils/cache';
 import { countWordsInJSON } from '@/utils/format';
 import { Head, router } from '@inertiajs/react';
-import { PanelLeft, Search } from 'lucide-react';
+import { PanelLeft, Search, Minimize2 } from 'lucide-react';
 import { type WikiNote } from '@/Components/Editor/WikiLinkExtension';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { type JSONContent } from 'novel';
@@ -147,6 +147,10 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
             if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
                 e.preventDefault();
                 setPaletteOpen((p) => !p);
+            }
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'f' || e.key === 'F')) {
+                e.preventDefault();
+                setTweak('focusMode', !useUIStore.getState().tweaks.focusMode);
             }
         }
         function onWikiNav(e: Event) {
@@ -467,6 +471,16 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                                 <span>Search or jump to…</span>
                                 <span className="docs-search-kbd">⌘K</span>
                             </button>
+                            {t.focusMode && (
+                                <button
+                                    className="docs-topbar-exit-focus"
+                                    onClick={() => setTweak('focusMode', false)}
+                                    title="Exit focus mode"
+                                    aria-label="Exit focus mode"
+                                >
+                                    <Minimize2 size={14} strokeWidth={1.75} />
+                                </button>
+                            )}
                         </div>
                     </div>
 

@@ -1688,6 +1688,33 @@ html.theme-nord.dark {
   }
 }
 
+/* ── Exit focus mode button (mobile only) ────────────────────────────────── */
+
+.docs-topbar-exit-focus {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .docs-topbar-exit-focus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-md);
+    border: var(--border-w) solid var(--border);
+    background: var(--surface);
+    color: var(--fg-2);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .focus-mode .docs-topbar {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 /* ── Wikilinks ──────────────────────────────────────────────────────────────── */
 
 .docs-wikilink {
