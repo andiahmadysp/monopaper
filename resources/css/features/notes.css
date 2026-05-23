@@ -103,7 +103,6 @@
   padding: calc(5px * var(--d)) 4px calc(5px * var(--d)) 12px;
   font-weight: 600;
   letter-spacing: -0.015em;
-  text-transform: lowercase;
 }
 
 .docs-sidebar-add {

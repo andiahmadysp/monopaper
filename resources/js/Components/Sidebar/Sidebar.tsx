@@ -258,8 +258,8 @@ export default function Sidebar({
         >
             <div className="docs-sidebar-header">
                 <div className="docs-sidebar-brand">
-                    <FileText size={14} style={{ color: 'var(--accent)' }} />
-                    <span>monopaper</span>
+                    {/*<FileText size={14} style={{ color: 'var(--accent)' }} />*/}
+                    <span>Monopaper</span>
                 </div>
                 <div className="docs-sidebar-header-actions">
                     <button

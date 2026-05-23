@@ -33,10 +33,10 @@ export default function Login() {
                 padding: '20px',
                 fontFamily: 'var(--font-sans)',
             }}>
-                <div 
-                    className="modal" 
-                    style={{ 
-                        width: '100%', 
+                <div
+                    className="modal"
+                    style={{
+                        width: '100%',
                         maxWidth: '340px',
                         animation: 'none', // Disable pop scale animation to prevent layout shifts
                     }}
@@ -65,11 +65,11 @@ export default function Login() {
                                 lineHeight: 1.15,
                                 margin: 0,
                             }}>
-                                monopaper
+                                Monopaper
                             </h1>
-                            <p style={{ 
-                                fontSize: '13px', 
-                                color: 'var(--fg-3)', 
+                            <p style={{
+                                fontSize: '13px',
+                                color: 'var(--fg-3)',
                                 marginTop: 6,
                                 marginInline: 0,
                                 marginBottom: 0,
@@ -81,7 +81,7 @@ export default function Login() {
                         <form onSubmit={submit}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                                 <div className="field">
-                                    <label 
+                                    <label
                                         htmlFor="password"
                                         style={{
                                             fontSize: '10.5px',

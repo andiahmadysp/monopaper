@@ -55,10 +55,10 @@ function fuzzyMatchAndHighlight(text: string, query: string): FuzzyResult {
             highlightIndices.add(textIdx);
             queryIdx++;
             consecutiveCount++;
-            
+
             // Reward consecutive match
             score += 10 + consecutiveCount * 5;
-            
+
             // Reward matching start of word
             if (textIdx === 0 || textLower[textIdx - 1] === ' ' || textLower[textIdx - 1] === '_') {
                 score += 15;
@@ -116,7 +116,7 @@ export default function CommandPalette({ open, onClose, commands }: CommandPalet
     const [activeIndex, setActiveIndex] = useState(0);
     const [searchResults, setSearchResults] = useState<{ id: number; title: string; slug: string; snippet: string }[]>([]);
     const [loading, setLoading] = useState(false);
-    
+
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -276,8 +276,8 @@ export default function CommandPalette({ open, onClose, commands }: CommandPalet
     let absoluteIndex = 0;
 
     return (
-        <div 
-            className="pal-backdrop" 
+        <div
+            className="pal-backdrop"
             onMouseDown={(e) => e.target === e.currentTarget && onClose()}
         >
             <div className="pal">
@@ -372,9 +372,9 @@ export default function CommandPalette({ open, onClose, commands }: CommandPalet
                         })
                     )}
                 </div>
-                
+
                 <div className="pal-foot">
-                    <span>monopaper command palette</span>
+                    <span>Monopaper command palette</span>
                     <div className="keys">
                         <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
                         <span><kbd>↵</kbd> select</span>
