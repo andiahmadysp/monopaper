@@ -1,8 +1,8 @@
-# monopaper
+# Monopaper
 
 A high-performance, minimalist, and open-source note-taking application engineered with a distraction-free user interface. Built with Laravel, React, InertiaJS, and TypeScript.
 
-![monopaper banner](https://raw.githubusercontent.com/andiahmadysp/monopaper/main/public/logo/android-chrome-192x192.png)
+![Monopaper banner](.github/assets/banner.png)
 
 ## Key Features
 
@@ -38,8 +38,8 @@ A high-performance, minimalist, and open-source note-taking application engineer
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/andiahmadysp/monopaper.git
-   cd monopaper
+   git clone https://github.com/andiahmadysp/Monopaper.git
+   cd Monopaper
    ```
 
 2. **Install PHP and Node dependencies:**
@@ -70,7 +70,7 @@ A high-performance, minimalist, and open-source note-taking application engineer
    npm run dev
    ```
 
-Visit `http://localhost:8000` to start using **monopaper**.
+Visit `http://localhost:8000` to start using **Monopaper**.
 
 ---
 

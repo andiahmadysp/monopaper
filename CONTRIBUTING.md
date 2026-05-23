@@ -1,6 +1,6 @@
-# Contributing to monopaper
+# Contributing to Monopaper
 
-Thank you for your interest in contributing to **monopaper**! We want to make contributing to this project as easy and transparent as possible.
+Thank you for your interest in contributing to **Monopaper**! We want to make contributing to this project as easy and transparent as possible.
 
 ## Code of Conduct
 
