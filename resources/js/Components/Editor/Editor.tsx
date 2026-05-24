@@ -15,6 +15,7 @@ import {
     type JSONContent,
 } from 'novel';
 import { getExtensions, uploadFn } from './extensions';
+import { createWikiLinkSuggestion, type WikiNote } from './WikiLinkExtension';
 import { slashItems } from './slash-items';
 import { NodeSelector } from './NodeSelector';
 import { TextButtons } from './TextButtons';
@@ -26,13 +27,14 @@ interface Props {
     initialContent: JSONContent | null;
     onChange: (json: JSONContent) => void;
     docKey: number | string;
+    allNotes?: WikiNote[];
 }
 
-export default function Editor({ initialContent, onChange, docKey }: Props) {
+export default function Editor({ initialContent, onChange, docKey, allNotes = [] }: Props) {
     const [openNode, setOpenNode] = useState(false);
     const [openLink, setOpenLink] = useState(false);
     const [openColor, setOpenColor] = useState(false);
-    
+
     const spellCheck = useUIStore((s) => s.tweaks.spellCheck ?? true);
 
     const handleUpdate = useCallback(
@@ -42,7 +44,11 @@ export default function Editor({ initialContent, onChange, docKey }: Props) {
         [onChange]
     );
 
-    const extensions = useMemo(() => getExtensions(), []);
+    const extensions = useMemo(
+        () => [...getExtensions(), createWikiLinkSuggestion(allNotes)],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [docKey],
+    );
 
     return (
         <EditorRoot>

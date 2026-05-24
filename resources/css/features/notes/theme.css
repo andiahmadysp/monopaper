@@ -1,0 +1,118 @@
+/* ── Custom Theme Presets ──────────────────────────────────── */
+
+html.theme-sepia {
+  --bg: #fbf6ec;
+  --surface: #f4edd8;
+  --surface-2: #ebdcb9;
+  --fg: #433422;
+  --fg-2: #5d4a36;
+  --fg-3: #8a7761;
+  --fg-4: #c0b39f;
+  --border: #e0d0b3;
+  --border-2: #ccba9a;
+  --accent: #a05a2c;
+  --accent-fg: #fbf6ec;
+}
+
+html.theme-sepia.dark {
+  --bg: #1c150c;
+  --surface: #271f14;
+  --surface-2: #342a1d;
+  --fg: #f4edd8;
+  --fg-2: #d8c2aa;
+  --fg-3: #9b8772;
+  --fg-4: #6b5742;
+  --border: #3b3022;
+  --border-2: #4c3f2d;
+  --accent: #e08c4e;
+  --accent-fg: #271f14;
+}
+
+html.theme-nord {
+  --bg: #eceff4;
+  --surface: #e5e9f0;
+  --surface-2: #d8dee9;
+  --fg: #2e3440;
+  --fg-2: #3b4252;
+  --fg-3: #4c566a;
+  --fg-4: #cbd2e1;
+  --border: #d8dee9;
+  --border-2: #c2cbdc;
+  --accent: #5e81ac;
+  --accent-fg: #eceff4;
+}
+
+html.theme-nord.dark {
+  --bg: #2e3440;
+  --surface: #3b4252;
+  --surface-2: #434c5e;
+  --fg: #d8dee9;
+  --fg-2: #e5e9f0;
+  --fg-3: #a3be8c;
+  --fg-4: #4c566a;
+  --border: #434c5e;
+  --border-2: #4c566a;
+  --accent: #88c0d0;
+  --accent-fg: #2e3440;
+}
+
+/* ── Focus Mode ────────────────────────────────────────────── */
+.focus-mode .docs-sidebar {
+  display: none !important;
+}
+
+.focus-mode .docs-topbar {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.focus-mode .docs-topbar:hover,
+.focus-mode .docs-topbar:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.focus-mode .docs-content-header {
+  opacity: 0.35;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.focus-mode .docs-content-header:hover,
+.focus-mode .docs-content-header:focus-within {
+  opacity: 1;
+}
+
+/* ── Word Counter & Reading Time Footer Status ─────────────── */
+.docs-editor-status {
+  position: absolute;
+  bottom: 16px;
+  right: 24px;
+  font-size: 11px;
+  color: var(--fg-3);
+  font-family: var(--font-mono);
+  background: var(--surface);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.focus-mode .docs-editor-status {
+  opacity: 0.15;
+}
+
+.focus-mode .docs-editor-status:hover {
+  opacity: 0.8;
+}
+
+.docs-editor-status-sep {
+  color: var(--fg-4);
+}
+

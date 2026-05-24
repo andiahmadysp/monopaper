@@ -17,6 +17,7 @@ import {
     renderItems,
 } from 'novel';
 import { slashItems } from './slash-items';
+import { WikiLinkNode } from './WikiLinkExtension';
 
 // ─── Image compression (canvas) ──────────────────────────────────────────────
 async function compressImage(file: File, maxWidth = 1920, quality = 0.85): Promise<Blob> {
@@ -44,7 +45,7 @@ async function onUpload(file: File): Promise<string> {
     const fd = new FormData();
     fd.append('image', compressed, file.name);
     const csrf = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
-    const res = await fetch('/docs/images', {
+    const res = await fetch('/notes/images', {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': csrf },
         body: fd,
@@ -64,6 +65,7 @@ export const uploadFn = createImageUpload({
 });
 
 export const getExtensions = () => [
+    WikiLinkNode,
     StarterKit.configure({
         dropcursor: { color: 'var(--accent)', width: 2 },
     }),
