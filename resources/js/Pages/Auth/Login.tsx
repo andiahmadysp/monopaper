@@ -1,6 +1,8 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useApplyTweaks } from '@/hooks/useApplyTweaks';
 import { useTweaks } from '@/hooks/useTweaks';
+import { Button } from '@/Components/ui/Button';
+import { Input } from '@/Components/ui/Input';
 import { FileText } from 'lucide-react';
 import type { FormEventHandler } from 'react';
 
@@ -31,31 +33,25 @@ export default function Login() {
                             </div>
 
                             <form onSubmit={submit} className="auth-form">
-                                <div className="field">
-                                    <label htmlFor="password" className="auth-field-label">
-                                        PASSWORD
-                                    </label>
-                                    <input
-                                        id="password"
-                                        type="password"
-                                        className="input auth-input"
-                                        autoFocus
-                                        autoComplete="current-password"
-                                        value={data.password}
-                                        onChange={e => setData('password', e.target.value)}
-                                    />
-                                    {errors.password && (
-                                        <span className="auth-field-error">{errors.password}</span>
-                                    )}
-                                </div>
-
-                                <button
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    label="PASSWORD"
+                                    error={errors.password}
+                                    className="auth-input"
+                                    autoFocus
+                                    autoComplete="current-password"
+                                    value={data.password}
+                                    onChange={e => setData('password', e.target.value)}
+                                />
+                                <Button
                                     type="submit"
-                                    className="btn btn-primary auth-submit"
-                                    disabled={processing}
+                                    variant="primary"
+                                    loading={processing}
+                                    className="auth-submit"
                                 >
                                     {processing ? 'Signing in…' : 'Sign in'}
-                                </button>
+                                </Button>
                             </form>
                         </div>
                     </div>
