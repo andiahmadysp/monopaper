@@ -140,7 +140,6 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
         }
     }, [initNote.id]);
 
-    // Ctrl+K / ⌘K
     useEffect(() => {
         function onKey(e: KeyboardEvent) {
             if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
@@ -534,7 +533,6 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                         </Suspense>
                     </div>
 
-                    {/* Word Count Status Bar */}
                     {(t.wordCount ?? true) && (
                         <div className="docs-editor-status">
                             <span>{wordCount} words</span>

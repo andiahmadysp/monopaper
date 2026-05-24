@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
@@ -15,7 +15,7 @@ const variantClass: Record<Variant, string> = {
     primary:   'btn btn-primary',
     secondary: 'btn',
     ghost:     'btn btn-ghost',
-    danger:    'btn btn-danger',
+    danger:    'btn btn-ghost btn-danger',
 };
 
 const sizeClass: Record<Size, string> = {
@@ -24,17 +24,13 @@ const sizeClass: Record<Size, string> = {
     lg: 'btn--lg',
 };
 
-export function Button({
-    variant = 'secondary',
-    size = 'md',
-    loading = false,
-    disabled,
-    className,
-    children,
-    ...props
-}: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+    { variant = 'secondary', size = 'md', loading = false, disabled, className, children, ...props },
+    ref,
+) {
     return (
         <button
+            ref={ref}
             {...props}
             disabled={disabled || loading}
             className={cn(variantClass[variant], sizeClass[size], className)}
@@ -42,4 +38,4 @@ export function Button({
             {children}
         </button>
     );
-}
+});
