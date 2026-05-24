@@ -48,12 +48,14 @@ A high-performance, minimalist, and open-source note-taking application engineer
    cd Monopaper
    ```
 
+
+#### Option A: Manual
+
 2. Copy environment file:
    ```bash
    cp .env.example .env
+   php artisan key:generate
    ```
-
-#### Option A: Manual
 
 3. Install dependencies:
    ```bash
@@ -63,7 +65,6 @@ A high-performance, minimalist, and open-source note-taking application engineer
 
 4. Generate key and run migrations:
    ```bash
-   php artisan key:generate
    touch database/database.sqlite
    php artisan migrate --seed
    ```
@@ -77,13 +78,36 @@ A high-performance, minimalist, and open-source note-taking application engineer
    ```
 
 #### Option B: Docker
+2. Build and start the application:
 
-3. Start containers:
-   ```bash
-   docker-compose up -d --build
-   ```
+```bash
+docker compose up -d --build
+```
 
-Visit `http://localhost:8000` to start using **Monopaper**.
+During the first startup, the container automatically:
+
+- creates the `.env` file
+- generates the application key
+- runs database migrations
+- seeds the database
+- caches Laravel configuration and routes
+
+
+Visit `http://localhost:8000` to start using Monopaper.
+
+### Environment Configuration
+
+By default, Monopaper uses SQLite for quick local setup.
+
+To use another database driver, create and configure your `.env` file before starting the containers.
+
+Example:
+
+```bash
+cp .env.example .env
+```
+
+Then modify the database variables as needed.
 
 ---
 
