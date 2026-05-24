@@ -9,8 +9,10 @@ RUN npm run build
 # ── Stage 2: Backend Build ────────────────────────────────────
 FROM composer:latest AS backend-builder
 WORKDIR /var/www/monopaper
+COPY composer.* ./
+RUN composer install --prefer-dist --no-autoloader --no-dev
 COPY . .
-RUN composer install --prefer-dist --optimize-autoloader --no-dev --no-interaction
+RUN composer dump-autoload --optimize --no-dev
 
 # ── Stage 3: Final Runtime ────────────────────────────────────
 FROM php:8.4-fpm

@@ -48,7 +48,6 @@ A high-performance, minimalist, and open-source note-taking application engineer
    cd Monopaper
    ```
 
-
 #### Option A: Manual
 
 2. Copy environment file:
@@ -78,11 +77,11 @@ A high-performance, minimalist, and open-source note-taking application engineer
    ```
 
 #### Option B: Docker
-2. Build and start the application:
 
-```bash
-docker compose up -d --build
-```
+3. Build and start the application:
+   ```bash
+   sudo docker compose up -d --build
+   ```
 
 During the first startup, the container automatically:
 
@@ -91,7 +90,6 @@ During the first startup, the container automatically:
 - runs database migrations
 - seeds the database
 - caches Laravel configuration and routes
-
 
 Visit `http://localhost:8000` to start using Monopaper.
 
@@ -103,9 +101,9 @@ To use another database driver, create and configure your `.env` file before sta
 
 Example:
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cp .env.example .env
+   ```
 
 Then modify the database variables as needed.
 

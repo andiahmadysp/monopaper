@@ -1,42 +1,47 @@
-## Git
+# Git
 .git
 .github
 
-## Docker
+# Docker
 docker-compose.yml
 Dockerfile
+.dockerignore
 
-## Dependencies
+# Dependencies
 node_modules
 vendor
 
-## Build artifacts
+# Build artifacts
 public/build
 public/hot
 public/storage
 public/bucket
 
-## Laravel storage
+# Laravel storage
 storage/*.key
 storage/logs/*
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
+bootstrap/cache/*
 
-## Environment files
+# Environment files
 .env
 .env.*
 !.env.example
 
 # Misc.
+tests
 Homestead.json
 Homestead.yaml
 auth.json
 npm-debug.log
 yarn-error.log
 .fleet
+.claude
+.husky
 .idea
 .vscode
 .phpunit.result.cache
 .phpunit.cache
-tests
+*.MD
