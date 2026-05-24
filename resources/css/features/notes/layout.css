@@ -1,0 +1,482 @@
+/* ── Docs ────────────────────────────────────────────────────── */
+
+/* Layout */
+.docs-shell {
+  display: flex;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Mobile sidebar backdrop */
+.docs-sidebar-backdrop {
+  display: none;
+}
+
+/* Mobile toggle button (hamburger) in topbar — hidden on desktop */
+.docs-topbar-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 26px;
+  border: none;
+  background: none;
+  color: var(--fg-3);
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  flex-shrink: 0;
+  padding: 0;
+  transition: color 0.12s, background 0.12s;
+}
+
+.docs-topbar-menu-btn:hover {
+  color: var(--fg);
+  background: var(--hover);
+}
+
+/* Sidebar header actions wrapper (add + close) */
+.docs-sidebar-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 6px;
+  flex-shrink: 0;
+}
+
+/* Close button — only visible on mobile when sidebar is open */
+.docs-sidebar-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  border-radius: var(--r-sm);
+  color: var(--fg-4);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s, background 0.12s;
+}
+
+.docs-sidebar-close:hover {
+  color: var(--fg);
+  background: var(--hover);
+}
+
+
+
+/* ── Sidebar ───────────────────────────────────────────── */
+.docs-sidebar {
+  width: 260px;
+  min-width: 180px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: var(--border-w) solid var(--border);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Header row: back button + new button */
+.docs-sidebar-header {
+  display: flex;
+  align-items: center;
+  height: calc(46px * var(--d));
+  padding: 0;
+  border-bottom: var(--border-w) solid var(--border);
+  flex-shrink: 0;
+}
+
+.docs-sidebar-brand {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg);
+  font-size: var(--fs-sm);
+  padding: calc(5px * var(--d)) 4px calc(5px * var(--d)) 12px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.docs-sidebar-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  border-radius: var(--r-sm);
+  color: var(--fg-4);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s, background 0.12s;
+  flex-shrink: 0;
+}
+
+.docs-sidebar-add:hover {
+  color: var(--fg);
+  background: var(--hover);
+}
+
+.docs-sidebar-add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Search row */
+.docs-sidebar-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: calc(10px * var(--d)) 12px calc(7px * var(--d));
+  flex-shrink: 0;
+}
+
+.docs-sidebar-search-icon {
+  color: var(--fg-4);
+  flex-shrink: 0;
+}
+
+.docs-sidebar-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  outline: none;
+  font-family: var(--font-sans);
+}
+
+.docs-sidebar-search input::placeholder {
+  color: var(--fg-3);
+}
+
+.docs-sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.docs-section-label {
+  padding: calc(10px * var(--d)) 14px calc(4px * var(--d));
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  user-select: none;
+}
+
+.docs-sidebar-empty {
+  padding: 10px 12px;
+  font-size: var(--fs-xs);
+  color: var(--fg-4);
+}
+
+/* Resize handle */
+.docs-sidebar-resizer {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  width: 6px;
+  cursor: ew-resize;
+  z-index: 20;
+}
+
+.docs-sidebar-resizer:hover,
+.docs-sidebar-resizer:active {
+  background: var(--accent);
+  opacity: 0.25;
+}
+
+/* Tree items */
+.docs-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px 0 0;
+  height: calc(30px * var(--d));
+  min-width: 0;
+  cursor: grab;
+  border-radius: var(--r-sm);
+  margin: 0 6px;
+  transition: background 0.1s;
+  position: relative;
+}
+
+.docs-tree-item:active {
+  cursor: grabbing;
+}
+
+.docs-tree-item:hover {
+  background: var(--hover);
+}
+
+.docs-tree-item:hover .docs-tree-title {
+  color: var(--fg);
+}
+
+.docs-tree-item.active {
+  background: var(--active);
+}
+
+.docs-tree-item.active .docs-tree-title {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.docs-tree-item.drag-active {
+  background: var(--hover);
+}
+
+.docs-tree-chevron,
+.docs-tree-leaf-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  min-width: 18px;
+  height: calc(30px * var(--d));
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--fg-4);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.docs-tree-chevron { cursor: pointer; }
+.docs-tree-chevron:hover { color: var(--fg-2); }
+.docs-tree-leaf-icon { cursor: grab; }
+
+.docs-tree-label { cursor: pointer; }
+
+.docs-tree-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  height: 100%;
+  /* override grab from parent */
+  cursor: pointer;
+}
+
+.docs-tree-title {
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.1s;
+}
+
+.docs-tree-actions {
+  display: none;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  padding-right: 4px;
+}
+
+.docs-tree-item:hover .docs-tree-actions { display: flex; }
+
+.docs-tree-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  border-radius: var(--r-sm);
+  color: var(--fg-3);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.1s, background 0.1s;
+}
+
+.docs-tree-action:hover {
+  color: var(--fg);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Popover menu */
+.docs-tree-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 200;
+  background: var(--surface);
+  border: var(--border-w) solid var(--border-2);
+  border-radius: var(--r-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  min-width: 148px;
+  animation: popover-in 0.1s ease;
+}
+
+.docs-tree-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  background: none;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-xs);
+  font-family: var(--font-sans);
+  color: var(--fg-2);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.08s, color 0.08s;
+}
+
+.docs-tree-menu-item:hover {
+  background: var(--hover);
+  color: var(--fg);
+}
+
+.docs-tree-menu-item--danger:hover {
+  color: var(--color-danger);
+}
+
+/* Drop line indicator */
+.docs-drop-line {
+  position: absolute;
+  right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Drag overlay */
+.docs-drag-overlay {
+  background: var(--surface);
+  border: var(--border-w) solid var(--border-2);
+  border-radius: var(--r-sm);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 0 10px;
+  height: 28px;
+  color: var(--fg-2);
+  font-size: var(--fs-xs);
+}
+
+/* ── Docs Responsive — Mobile overlay sidebar ──────────── */
+@media (max-width: 1024px) {
+  /* Show hamburger toggle button */
+  .docs-topbar-menu-btn {
+    display: inline-flex;
+  }
+
+  /* Show close (×) button inside sidebar header */
+  .docs-sidebar-close {
+    display: inline-flex;
+  }
+
+  /* Sidebar: hidden from flow entirely when closed */
+  .docs-sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 85vw !important;
+    border-right: var(--border-w) solid var(--border);
+  }
+
+  /* Sidebar open: slide in from left */
+  .docs-sidebar.docs-sidebar--open {
+    display: flex;
+    animation: docs-sidebar-in 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
+  }
+
+  @keyframes docs-sidebar-in {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(0); }
+  }
+
+  /* Backdrop */
+  .docs-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 49;
+    animation: docs-backdrop-in 0.2s ease forwards;
+  }
+
+  @keyframes docs-backdrop-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* Resizer: not needed on mobile */
+  .docs-sidebar-resizer {
+    display: none;
+  }
+
+  /* Main area takes full width — no sidebar in flow */
+  .docs-main {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* Topbar: tighter padding, show hamburger */
+  .docs-topbar {
+    padding: 0 14px 0 10px;
+    gap: 6px;
+  }
+
+  /* Editor: comfortable padding */
+  .docs-editor-area {
+    padding: 0 20px calc(80px * var(--d));
+  }
+}
+
+@media (max-width: 480px) {
+  .docs-topbar {
+    height: 40px;
+    padding: 0 12px 0 8px;
+  }
+
+  .docs-title-input {
+    font-size: var(--fs-sm);
+  }
+
+  .docs-editor-area {
+    padding: 0 14px calc(80px * var(--d));
+  }
+}
+
+/* ProseMirror gapcursor (blinking horizontal line under blocks/images) override to a normal vertical cursor */
+.docs-editor-area .ProseMirror .ProseMirror-gapcursor:after,
+.docs-editor-area .ProseMirror .ProseMirror-gapcursor::after {
+  border-top: none !important;
+  border-left: 1.5px solid var(--fg) !important;
+  width: 0 !important;
+  height: 1.2em !important;
+  margin-top: 0.1em;
+}
+
