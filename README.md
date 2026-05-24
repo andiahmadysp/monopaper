@@ -78,7 +78,7 @@ A high-performance, minimalist, and open-source note-taking application engineer
 
 #### Option B: Docker
 
-3. Build and start the application:
+2. Build and start the application:
    ```bash
    sudo docker compose up -d --build
    ```
