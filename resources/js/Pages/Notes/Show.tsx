@@ -1,8 +1,8 @@
+import NotesLayout from '@/Layouts/NotesLayout';
 import CommandPalette, { Command } from '@/Components/CommandPalette';
 import TweaksPanel from '@/Components/TweaksPanel';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Sidebar from '@/Components/Sidebar/Sidebar';
-import { useApplyTweaks } from '@/hooks/useApplyTweaks';
 import { useTweaks } from '@/hooks/useTweaks';
 import { useUIStore } from '@/store/ui';
 import { useToast } from '@/hooks/useToast';
@@ -59,7 +59,6 @@ interface Props {
 
 export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
     const [t, setTweak] = useTweaks();
-    useApplyTweaks(t);
     const { toasts, toast, dismiss } = useToast();
 
     const [notes, setNotes] = useState<NoteListItem[]>(initNotes);
@@ -563,3 +562,7 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
         </>
     );
 }
+
+NotesShow.layout = (page: React.ReactNode) => (
+    <NotesLayout>{page}</NotesLayout>
+);

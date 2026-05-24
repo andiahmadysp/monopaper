@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { NoteListItem } from '@/types';
+import NotesLayout from '@/Layouts/NotesLayout';
 import Sidebar from '@/Components/Sidebar/Sidebar';
 
 interface Props {
@@ -51,3 +52,7 @@ export default function NotesIndex({ notes = [] }: Props) {
         </>
     );
 }
+
+NotesIndex.layout = (page: React.ReactNode) => (
+    <NotesLayout>{page}</NotesLayout>
+);
