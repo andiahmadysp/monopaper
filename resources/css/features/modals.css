@@ -152,6 +152,25 @@
   line-height: 1.45;
 }
 
+.field-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--fg-3);
+  letter-spacing: 0.03em;
+}
+
+.field-error {
+  font-size: var(--fs-xs);
+  color: var(--danger, #b34638);
+  margin-top: 2px;
+}
+
+.field-hint {
+  font-size: var(--fs-xs);
+  color: var(--fg-3);
+  margin-top: 2px;
+}
+
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

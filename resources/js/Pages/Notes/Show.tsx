@@ -1,19 +1,22 @@
 import NotesLayout from '@/Layouts/NotesLayout';
 import CommandPalette, { Command } from '@/Components/CommandPalette';
-import TweaksPanel from '@/Components/TweaksPanel';
 import ConfirmDialog from '@/Components/ConfirmDialog';
+import { ErrorBoundary } from '@/Components/ErrorBoundary';
 import Sidebar from '@/Components/Sidebar/Sidebar';
+import { NoteTopBar } from './components/NoteTopBar';
+import { useNoteAutoSave } from '@/hooks/useNoteAutoSave';
 import { useTweaks } from '@/hooks/useTweaks';
+import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useUIStore } from '@/store/ui';
 import { useToast } from '@/hooks/useToast';
 import { Toaster } from '@/Components/Toast';
+import TweaksPanel from '@/Components/TweaksPanel';
 import { NoteListItem, Note } from '@/types';
 import { contentCache } from '@/utils/cache';
-import { countWordsInJSON } from '@/utils/format';
+import { countWordsInJSON, fmtNoteDate, timeAgo } from '@/utils/format';
+import { xsrfToken } from '@/utils/http';
 import { Head, router } from '@inertiajs/react';
-import { PanelLeft, Search, Minimize2 } from 'lucide-react';
 import { type WikiNote } from '@/Components/Editor/WikiLinkExtension';
-import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { type JSONContent } from 'novel';
 import React, {
     lazy,
@@ -27,31 +30,6 @@ import React, {
 
 const Editor = lazy(() => import('@/Components/Editor/Editor'));
 
-function xsrfToken(): string {
-    return decodeURIComponent(
-        document.cookie
-            .split('; ')
-            .find((c) => c.startsWith('XSRF-TOKEN='))
-            ?.slice('XSRF-TOKEN='.length) ?? '',
-    );
-}
-
-function fmtDate(iso: string): string {
-    return new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    }).format(new Date(iso));
-}
-
-function timeAgo(iso: string): string {
-    const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-    if (diff < 60) return `${diff}s ago`;
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
-}
-
 interface Props {
     notes: NoteListItem[];
     note: Note;
@@ -60,14 +38,11 @@ interface Props {
 export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
     const [t, setTweak] = useTweaks();
     const { toasts, toast, dismiss } = useToast();
+    const appearance = useUIStore((s) => s.appearance);
 
     const [notes, setNotes] = useState<NoteListItem[]>(initNotes);
     const [note, setNote] = useState<Note>(initNote);
     const [title, setTitle] = useState(initNote.title);
-    const [wordCount, setWordCount] = useState(() => countWordsInJSON(initNote.content));
-    const [saveState, setSaveState] = useState<'saved' | 'saving' | 'unsaved'>(
-        'saved',
-    );
     const [creating, setCreating] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [paletteOpen, setPaletteOpen] = useState(false);
@@ -78,14 +53,29 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
         onConfirm: () => void;
     } | null>(null);
 
-    const appearance = useUIStore((s) => s.appearance);
-
     const slugRef = useRef(initNote.slug);
-    const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const pendingContent = useRef<JSONContent | null>(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const editorAreaRef = useRef<HTMLDivElement>(null);
     const isPendingRef = useRef(false);
+
+    const {
+        saveState,
+        setSaveState,
+        wordCount,
+        setWordCount,
+        pendingContent,
+        handleContentChange: rawHandleContentChange,
+        flushSave,
+    } = useNoteAutoSave({
+        slugRef,
+        isPendingRef,
+        initialWordCount: countWordsInJSON(initNote.content),
+    });
+
+    const handleContentChange = useCallback(
+        (json: JSONContent) => rawHandleContentChange(json, note.id),
+        [rawHandleContentChange, note.id],
+    );
 
     const allNotes = useMemo<WikiNote[]>(
         () => notes.filter((n) => n.id > 0).map((n) => ({ slug: n.slug, title: n.title || 'Untitled' })),
@@ -125,13 +115,9 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
         setSaveState('saved');
         pendingContent.current = null;
         if (!contentCache.has(initNote.id)) {
-            contentCache.set(
-                initNote.id,
-                initNote.content as JSONContent | null,
-            );
+            contentCache.set(initNote.id, initNote.content as JSONContent | null);
         }
-        const loadedContent = contentCache.get(initNote.id) ?? initNote.content;
-        setWordCount(countWordsInJSON(loadedContent));
+        setWordCount(countWordsInJSON(contentCache.get(initNote.id) ?? initNote.content));
         if (initNote.title === 'Untitled' && !initNote.content) {
             requestAnimationFrame(() => {
                 titleInputRef.current?.focus();
@@ -173,36 +159,6 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
         };
     }, []);
 
-    const saveContent = useCallback((content: JSONContent) => {
-        setSaveState('saving');
-        router.patch(
-            route('notes.update', { note: slugRef.current }),
-            { content },
-            {
-                preserveScroll: true,
-                preserveState: true,
-                only: ['note'], // Performance: Autosave only requests note data, bypassing heavy sidebar queries
-                onSuccess: () => setSaveState('saved'),
-                onError: () => setSaveState('unsaved'),
-            },
-        );
-    }, []);
-
-    const handleContentChange = useCallback(
-        (json: JSONContent) => {
-            pendingContent.current = json;
-            contentCache.set(note.id, json);
-            setWordCount(countWordsInJSON(json));
-            if (isPendingRef.current) return;
-            setSaveState('unsaved');
-            if (saveTimer.current) clearTimeout(saveTimer.current);
-            saveTimer.current = setTimeout(() => {
-                if (pendingContent.current) saveContent(pendingContent.current);
-            }, 1500);
-        },
-        [saveContent, note.id],
-    );
-
     const handleTitleBlur = useCallback(() => {
         const trimmed = title.trim() || 'Untitled';
         setTitle(trimmed);
@@ -221,15 +177,14 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
             setCreating(true);
             isPendingRef.current = true;
 
-            if (saveTimer.current) clearTimeout(saveTimer.current);
+            flushSave();
 
             const tempId = -Date.now();
             const now = new Date().toISOString();
             const tempNote: Note = {
                 id: tempId,
                 parent_id: parentId ?? null,
-                position: notes.filter((d) => d.parent_id === (parentId ?? null))
-                    .length,
+                position: notes.filter((d) => d.parent_id === (parentId ?? null)).length,
                 title: 'Untitled',
                 slug: `__temp_${Math.abs(tempId)}`,
                 updated_at: now,
@@ -258,10 +213,7 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                         Accept: 'application/json',
                         'X-XSRF-TOKEN': xsrfToken(),
                     },
-                    body: JSON.stringify({
-                        title: 'Untitled',
-                        parent_id: parentId ?? null,
-                    }),
+                    body: JSON.stringify({ title: 'Untitled', parent_id: parentId ?? null }),
                 });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const created: Note = await res.json();
@@ -270,14 +222,8 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                 contentCache.delete(tempId);
                 contentCache.set(created.id, cached ?? null);
 
-                setNotes((prev) =>
-                    prev.map((d) =>
-                        d.id === tempId ? { ...d, ...created } : d,
-                    ),
-                );
-                setNote((prev) =>
-                    prev.id === tempId ? { ...prev, ...created } : prev,
-                );
+                setNotes((prev) => prev.map((d) => d.id === tempId ? { ...d, ...created } : d));
+                setNote((prev) => prev.id === tempId ? { ...prev, ...created } : prev);
                 slugRef.current = created.slug;
                 isPendingRef.current = false;
 
@@ -287,8 +233,7 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                     route('notes.show', { note: created.slug }),
                 );
 
-                const currentTitle =
-                    titleInputRef.current?.value.trim() || 'Untitled';
+                const currentTitle = titleInputRef.current?.value.trim() || 'Untitled';
                 if (currentTitle !== 'Untitled') {
                     router.patch(
                         route('notes.update', { note: created.slug }),
@@ -299,7 +244,7 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
 
                 if (pendingContent.current) {
                     setSaveState('saving');
-                    saveContent(pendingContent.current);
+                    flushSave();
                 }
                 toast('Note created');
             } catch (_err) {
@@ -314,66 +259,49 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                 setCreating(false);
             }
         },
-        [creating, notes, saveContent, initNote],
+        [creating, notes, flushSave, initNote],
     );
+
+    const openConfirm = useCallback((title: string, onConfirm: () => void) => {
+        setConfirmPending({ title, message: 'This cannot be undone.', onConfirm });
+    }, []);
 
     const handleDelete = useCallback(() => {
         if (deleting) return;
         const snapshot = [...notes];
-        setConfirmPending({
-            title: `Delete "${note.title || 'Untitled'}"?`,
-            message: 'This cannot be undone.',
-            onConfirm: () => {
-                setConfirmPending(null);
-                setDeleting(true);
-                setNotes((prev) =>
-                    prev.filter((d) => d.slug !== slugRef.current),
-                );
-                router.delete(
-                    route('notes.destroy', { note: slugRef.current }),
-                    {
-                        preserveScroll: true,
-                        onSuccess: () => {
-                            toast('Note deleted', 'delete');
-                        },
-                        onError: () => setNotes(snapshot),
-                        onFinish: () => setDeleting(false),
-                    },
-                );
-            },
+        openConfirm(`Delete "${note.title || 'Untitled'}"?`, () => {
+            setConfirmPending(null);
+            setDeleting(true);
+            setNotes((prev) => prev.filter((d) => d.slug !== slugRef.current));
+            router.delete(route('notes.destroy', { note: slugRef.current }), {
+                preserveScroll: true,
+                onSuccess: () => toast('Note deleted', 'delete'),
+                onError: () => setNotes(snapshot),
+                onFinish: () => setDeleting(false),
+            });
         });
-    }, [deleting, note.title, notes]);
+    }, [deleting, note.title, notes, openConfirm]);
+
+    const handleDeleteNote = useCallback((slug: string) => {
+        const target = notes.find((d) => d.slug === slug);
+        const snapshot = [...notes];
+        openConfirm(`Delete "${target?.title || 'Untitled'}"?`, () => {
+            setConfirmPending(null);
+            setNotes((prev) => prev.filter((d) => d.slug !== slug));
+            router.delete(route('notes.destroy', { note: slug }), {
+                preserveScroll: true,
+                onSuccess: () => toast('Note deleted', 'delete'),
+                onError: () => setNotes(snapshot),
+            });
+        });
+    }, [notes, openConfirm]);
 
     const handleReorder = useCallback((newNotes: NoteListItem[]) => {
         setNotes(newNotes);
     }, []);
 
-    const handleDeleteNote = useCallback(
-        (slug: string) => {
-            const target = notes.find((d) => d.slug === slug);
-            const snapshot = [...notes];
-            setConfirmPending({
-                title: `Delete "${target?.title || 'Untitled'}"?`,
-                message: 'This cannot be undone.',
-                onConfirm: () => {
-                    setConfirmPending(null);
-                    setNotes((prev) => prev.filter((d) => d.slug !== slug));
-                    router.delete(route('notes.destroy', { note: slug }), {
-                        preserveScroll: true,
-                        onSuccess: () => {
-                            toast('Note deleted', 'delete');
-                        },
-                        onError: () => setNotes(snapshot),
-                    });
-                },
-            });
-        },
-        [notes],
-    );
-
     const commands = useMemo<Command[]>(() => {
         const cmds: Command[] = [];
-
         notes.filter((d) => d.slug !== note.slug && d.id > 0).forEach((d) => {
             cmds.push({
                 id: `nav-${d.id}`,
@@ -383,37 +311,19 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                 run: () => router.get(route('notes.show', { note: d.slug })),
             });
         });
-
         cmds.push(
-            {
-                id: 'new-note',
-                group: 'Create',
-                label: 'New note',
-                run: () => handleNew(),
-            },
-            {
-                id: 'new-child',
-                group: 'Create',
-                label: `New sub-note under "${note.title || 'this'}"`,
-                run: () => handleNew(note.id),
-            },
-            {
-                id: 'delete-note',
-                group: 'Actions',
-                label: `Delete "${note.title || 'Untitled'}"`,
-                run: handleDelete,
-            },
+            { id: 'new-note', group: 'Create', label: 'New note', run: () => handleNew() },
+            { id: 'new-child', group: 'Create', label: `New sub-note under "${note.title || 'this'}"`, run: () => handleNew(note.id) },
+            { id: 'delete-note', group: 'Actions', label: `Delete "${note.title || 'Untitled'}"`, run: handleDelete },
             {
                 id: 'open-appearance',
                 group: 'Actions',
                 label: 'Appearance settings',
                 keywords: ['appearance', 'theme', 'font', 'size', 'tweak'],
                 hint: '⌘⇧A',
-                run: () =>
-                    window.postMessage({ type: '__activate_edit_mode' }, '*'),
+                run: () => window.postMessage({ type: '__activate_edit_mode' }, '*'),
             },
         );
-
         return cmds;
     }, [notes, note, handleNew, handleDelete]);
 
@@ -428,7 +338,6 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                         aria-hidden
                     />
                 )}
-
                 <Sidebar
                     notes={notes}
                     currentSlug={note.slug}
@@ -439,49 +348,14 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                     isOpen={sidebarOpen}
                     onClose={() => setSidebarOpen(false)}
                 />
-
                 <div className="docs-main">
-                    <div className="docs-topbar">
-                        <button
-                            className="docs-topbar-menu-btn"
-                            onClick={() => setSidebarOpen((o) => !o)}
-                            title="Toggle sidebar"
-                            aria-label="Toggle sidebar"
-                        >
-                            <PanelLeft size={15} strokeWidth={1.75} />
-                        </button>
-                        <div className="docs-topbar-right">
-                            <span
-                                className={`docs-save-dot docs-save-dot--${saveState}`}
-                            >
-                                {saveState === 'saved'
-                                    ? '● Saved'
-                                    : saveState === 'saving'
-                                      ? 'Saving…'
-                                      : '● Unsaved'}
-                            </span>
-                            <button
-                                className="docs-search-btn"
-                                onClick={() => setPaletteOpen((p) => !p)}
-                                title="Search or open command palette (⌘K)"
-                            >
-                                <Search size={11} strokeWidth={2} />
-                                <span>Search or jump to…</span>
-                                <span className="docs-search-kbd">⌘K</span>
-                            </button>
-                            {t.focusMode && (
-                                <button
-                                    className="docs-topbar-exit-focus"
-                                    onClick={() => setTweak('focusMode', false)}
-                                    title="Exit focus mode"
-                                    aria-label="Exit focus mode"
-                                >
-                                    <Minimize2 size={14} strokeWidth={1.75} />
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
+                    <NoteTopBar
+                        saveState={saveState}
+                        focusMode={t.focusMode ?? false}
+                        onToggleSidebar={() => setSidebarOpen((o) => !o)}
+                        onOpenPalette={() => setPaletteOpen((p) => !p)}
+                        onExitFocus={() => setTweak('focusMode', false)}
+                    />
                     <div
                         ref={editorAreaRef}
                         className="docs-editor-area"
@@ -492,7 +366,7 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                     >
                         <div className="docs-content-header">
                             <p className="docs-content-meta">
-                                <span>Created {fmtDate(note.created_at)}</span>
+                                <span>Created {fmtNoteDate(note.created_at)}</span>
                                 <span className="docs-content-meta-sep">·</span>
                                 <span>Edited {timeAgo(note.updated_at)}</span>
                             </p>
@@ -505,34 +379,27 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         e.preventDefault();
-                                        editorAreaRef.current
-                                            ?.querySelector<HTMLElement>(
-                                                '.tiptap',
-                                            )
-                                            ?.focus();
+                                        editorAreaRef.current?.querySelector<HTMLElement>('.tiptap')?.focus();
                                     }
                                 }}
                                 placeholder="Untitled"
                             />
                         </div>
-                        <Suspense
-                            fallback={<div className="docs-editor-loading" />}
-                        >
-                            <Editor
-                                key={note.id}
-                                docKey={note.id}
-                                initialContent={
-                                    (contentCache.get(
-                                        note.id,
-                                    ) as JSONContent | null) ??
-                                    (note.content as JSONContent | null)
-                                }
-                                onChange={handleContentChange}
-                                allNotes={allNotes}
-                            />
-                        </Suspense>
+                        <ErrorBoundary>
+                            <Suspense fallback={<div className="docs-editor-loading" />}>
+                                <Editor
+                                    key={note.id}
+                                    docKey={note.id}
+                                    initialContent={
+                                        (contentCache.get(note.id) as JSONContent | null) ??
+                                        (note.content as JSONContent | null)
+                                    }
+                                    onChange={handleContentChange}
+                                    allNotes={allNotes}
+                                />
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
-
                     {(t.wordCount ?? true) && (
                         <div className="docs-editor-status">
                             <span>{wordCount} words</span>
@@ -542,7 +409,6 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                     )}
                 </div>
             </div>
-
             <CommandPalette
                 open={paletteOpen}
                 onClose={() => setPaletteOpen(false)}
