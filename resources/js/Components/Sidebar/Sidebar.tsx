@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { IconButton } from '@/Components/ui/IconButton';
 import { NoteListItem } from '@/types';
 import {
     closestCorners,
@@ -261,22 +262,24 @@ export default memo(function Sidebar({
                     <span>Monopaper</span>
                 </div>
                 <div className="docs-sidebar-header-actions">
-                    <button
+                    <IconButton
                         className="docs-sidebar-add"
+                        aria-label="New note"
+                        title="New note"
                         onClick={() => onNew()}
                         disabled={creating}
-                        title="New note"
                     >
                         <Plus size={13} strokeWidth={2.5} />
-                    </button>
+                    </IconButton>
                     {onClose && (
-                        <button
+                        <IconButton
                             className="docs-sidebar-close"
-                            onClick={onClose}
+                            aria-label="Close sidebar"
                             title="Close sidebar"
+                            onClick={onClose}
                         >
                             <X size={13} strokeWidth={2} />
-                        </button>
+                        </IconButton>
                     )}
                 </div>
             </div>

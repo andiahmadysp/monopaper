@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Minimize2, PanelLeft, Search } from 'lucide-react';
+import { IconButton } from '@/Components/ui/IconButton';
 
 type SaveState = 'saved' | 'saving' | 'unsaved';
 
@@ -20,14 +21,14 @@ export const NoteTopBar = memo(function NoteTopBar({
 }: NoteTopBarProps) {
     return (
         <div className="docs-topbar">
-            <button
+            <IconButton
                 className="docs-topbar-menu-btn"
-                onClick={onToggleSidebar}
-                title="Toggle sidebar"
                 aria-label="Toggle sidebar"
+                title="Toggle sidebar"
+                onClick={onToggleSidebar}
             >
                 <PanelLeft size={15} strokeWidth={1.75} />
-            </button>
+            </IconButton>
             <div className="docs-topbar-right">
                 <span className={`docs-save-dot docs-save-dot--${saveState}`}>
                     {saveState === 'saved' ? '● Saved' : saveState === 'saving' ? 'Saving…' : '● Unsaved'}
@@ -42,14 +43,14 @@ export const NoteTopBar = memo(function NoteTopBar({
                     <span className="docs-search-kbd">⌘K</span>
                 </button>
                 {focusMode && (
-                    <button
+                    <IconButton
                         className="docs-topbar-exit-focus"
-                        onClick={onExitFocus}
-                        title="Exit focus mode"
                         aria-label="Exit focus mode"
+                        title="Exit focus mode"
+                        onClick={onExitFocus}
                     >
                         <Minimize2 size={14} strokeWidth={1.75} />
-                    </button>
+                    </IconButton>
                 )}
             </div>
         </div>

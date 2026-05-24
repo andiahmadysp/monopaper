@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
+import { IconButton } from '@/Components/ui/IconButton';
 import { useSortable } from '@dnd-kit/sortable';
 import { router } from '@inertiajs/react';
 import {
@@ -114,17 +115,18 @@ export default memo(function SortableItem({
                 </button>
 
                 <span className="docs-tree-actions" ref={menuRef}>
-                    <button
+                    <IconButton
                         className="docs-tree-action"
+                        aria-label="More options"
+                        title="More options"
+                        tabIndex={-1}
                         onClick={(e) => {
                             e.stopPropagation();
                             setMenuOpen((o) => !o);
                         }}
-                        title="More options"
-                        tabIndex={-1}
                     >
                         <MoreHorizontal size={12} strokeWidth={2} />
-                    </button>
+                    </IconButton>
                     {menuOpen && (
                         <div className="docs-tree-menu">
                             <button

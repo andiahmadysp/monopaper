@@ -2,7 +2,7 @@ import NotesLayout from '@/Layouts/NotesLayout';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import { ErrorBoundary } from '@/Components/ErrorBoundary';
 import Sidebar from '@/Components/Sidebar/Sidebar';
-import { NoteTopBar } from '@/Components/Notes/NoteTopBar';
+import { NoteTopBar } from '@/Components/NoteTopBar';
 import { useNoteAutoSave } from '@/hooks/useNoteAutoSave';
 import { useTweaks } from '@/hooks/useTweaks';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';

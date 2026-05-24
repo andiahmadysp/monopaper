@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { useEditor } from 'novel';
 import { Link, Trash, Check } from 'lucide-react';
+import { IconButton } from '@/Components/ui/IconButton';
 
 function getUrlFromString(str: string): string | null {
     try { new URL(str); return str; } catch {}
@@ -67,8 +68,8 @@ export function LinkSelector({ open, onOpenChange }: LinkSelectorProps) {
                             className="docs-link-input"
                         />
                         {href ? (
-                            <button
-                                type="button"
+                            <IconButton
+                                aria-label="Remove link"
                                 className="docs-link-btn docs-link-btn--danger"
                                 onClick={() => {
                                     editor.chain().focus().unsetLink().run();
@@ -76,11 +77,15 @@ export function LinkSelector({ open, onOpenChange }: LinkSelectorProps) {
                                 }}
                             >
                                 <Trash size={12} />
-                            </button>
+                            </IconButton>
                         ) : (
-                            <button type="submit" className="docs-link-btn">
+                            <IconButton
+                                aria-label="Save link"
+                                type="submit"
+                                className="docs-link-btn"
+                            >
                                 <Check size={12} />
-                            </button>
+                            </IconButton>
                         )}
                     </form>
                 </Popover.Content>

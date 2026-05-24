@@ -183,6 +183,18 @@
   gap: 12px;
 }
 
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
 .btn {
   padding: 8px 14px;
   border-radius: var(--r-md);
