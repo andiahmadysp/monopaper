@@ -357,6 +357,18 @@
 }
 
 /* Drop line indicator */
+.docs-sortable-item {
+  position: relative;
+}
+
+.docs-sortable-item--ghost {
+  opacity: 0;
+}
+
+.docs-drag-overlay-title {
+  margin-left: 6px;
+}
+
 .docs-drop-line {
   position: absolute;
   right: 0;

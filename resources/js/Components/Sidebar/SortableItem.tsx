@@ -57,7 +57,7 @@ export default function SortableItem({
     return (
         <div
             ref={setNodeRef}
-            style={{ position: 'relative', opacity: isGhost ? 0 : 1 }}
+            className={isGhost ? 'docs-sortable-item docs-sortable-item--ghost' : 'docs-sortable-item'}
         >
             {showLineAbove && (
                 <div

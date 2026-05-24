@@ -258,7 +258,6 @@ export default function Sidebar({
         >
             <div className="docs-sidebar-header">
                 <div className="docs-sidebar-brand">
-                    {/*<FileText size={14} style={{ color: 'var(--accent)' }} />*/}
                     <span>Monopaper</span>
                 </div>
                 <div className="docs-sidebar-header-actions">
@@ -337,10 +336,7 @@ export default function Sidebar({
                         {activeItem && (
                             <div className="docs-tree-item docs-drag-overlay">
                                 <FileText size={13} />
-                                <span
-                                    className="docs-tree-title"
-                                    style={{ marginLeft: 6 }}
-                                >
+                                <span className="docs-drag-overlay-title">
                                     {activeItem.title || 'Untitled'}
                                 </span>
                             </div>
