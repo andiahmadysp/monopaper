@@ -47,6 +47,7 @@
 }
 
 @import "./features/base.css";
+@import "./features/auth.css";
 @import "./features/shell.css";
 @import "./features/modals.css";
 @import "./features/palette.css";
