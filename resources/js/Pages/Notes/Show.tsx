@@ -1,16 +1,14 @@
 import NotesLayout from '@/Layouts/NotesLayout';
-import CommandPalette, { Command } from '@/Components/CommandPalette';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import { ErrorBoundary } from '@/Components/ErrorBoundary';
 import Sidebar from '@/Components/Sidebar/Sidebar';
-import { NoteTopBar } from './components/NoteTopBar';
+import { NoteTopBar } from '@/Components/Notes/NoteTopBar';
 import { useNoteAutoSave } from '@/hooks/useNoteAutoSave';
 import { useTweaks } from '@/hooks/useTweaks';
 import { useSwipeGesture } from '@/hooks/useSwipeGesture';
 import { useUIStore } from '@/store/ui';
 import { useToast } from '@/hooks/useToast';
 import { Toaster } from '@/Components/Toast';
-import TweaksPanel from '@/Components/TweaksPanel';
 import { NoteListItem, Note } from '@/types';
 import { contentCache } from '@/utils/cache';
 import { countWordsInJSON, fmtNoteDate, timeAgo } from '@/utils/format';
@@ -18,6 +16,7 @@ import { xsrfToken } from '@/utils/http';
 import { Head, router } from '@inertiajs/react';
 import { type WikiNote } from '@/Components/Editor/WikiLinkExtension';
 import { type JSONContent } from 'novel';
+import type { Command } from '@/Components/CommandPalette';
 import React, {
     lazy,
     Suspense,
@@ -29,6 +28,8 @@ import React, {
 } from 'react';
 
 const Editor = lazy(() => import('@/Components/Editor/Editor'));
+const CommandPalette = lazy(() => import('@/Components/CommandPalette'));
+const TweaksPanel = lazy(() => import('@/Components/TweaksPanel'));
 
 interface Props {
     notes: NoteListItem[];
@@ -409,12 +410,14 @@ export default function NotesShow({ notes: initNotes, note: initNote }: Props) {
                     )}
                 </div>
             </div>
-            <CommandPalette
-                open={paletteOpen}
-                onClose={() => setPaletteOpen(false)}
-                commands={commands}
-            />
-            <TweaksPanel tweaks={t} onTweak={setTweak} />
+            <Suspense fallback={null}>
+                <CommandPalette
+                    open={paletteOpen}
+                    onClose={() => setPaletteOpen(false)}
+                    commands={commands}
+                />
+                <TweaksPanel tweaks={t} onTweak={setTweak} />
+            </Suspense>
             <ConfirmDialog
                 open={!!confirmPending}
                 title={confirmPending?.title ?? ''}

@@ -376,17 +376,7 @@
 .docs-empty-btn {
   margin-top: 6px;
   padding: 8px 18px;
-  background: var(--accent);
-  color: var(--accent-fg);
-  border: none;
-  border-radius: var(--r-md);
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: opacity 0.1s;
 }
-
-.docs-empty-btn:hover { opacity: 0.82; }
 
 /* Bubble menu (text selection) */
 .docs-bubble {

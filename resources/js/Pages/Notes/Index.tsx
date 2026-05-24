@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { NoteListItem } from '@/types';
 import NotesLayout from '@/Layouts/NotesLayout';
 import Sidebar from '@/Components/Sidebar/Sidebar';
+import { Button } from '@/Components/ui/Button';
 
 interface Props {
     notes: NoteListItem[];
@@ -39,13 +40,15 @@ export default function NotesIndex({ notes = [] }: Props) {
                         <div className="docs-empty-sub">
                             Create your first note to get started
                         </div>
-                        <button
+                        <Button
+                            variant="primary"
                             className="docs-empty-btn"
                             onClick={createNote}
                             disabled={creating}
+                            loading={creating}
                         >
                             {creating ? 'Creating…' : 'New note'}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

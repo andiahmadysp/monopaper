@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { router } from '@inertiajs/react';
 import {
@@ -24,7 +24,7 @@ interface ItemProps {
     currentSlug: string;
 }
 
-export default function SortableItem({
+export default memo(function SortableItem({
     item,
     isGhost,
     showLineAbove,
@@ -163,4 +163,4 @@ export default function SortableItem({
             )}
         </div>
     );
-}
+});

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { NoteListItem } from '@/types';
 import {
     closestCorners,
@@ -42,7 +42,7 @@ interface SidebarProps {
     onClose?: () => void;
 }
 
-export default function Sidebar({
+export default memo(function Sidebar({
     notes,
     currentSlug,
     onNew,
@@ -355,4 +355,4 @@ export default function Sidebar({
             <div className="docs-sidebar-resizer" onMouseDown={startResize} />
         </aside>
     );
-}
+});

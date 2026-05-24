@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Minimize2, PanelLeft, Search } from 'lucide-react';
 
 type SaveState = 'saved' | 'saving' | 'unsaved';
@@ -10,7 +11,7 @@ interface NoteTopBarProps {
     onExitFocus: () => void;
 }
 
-export function NoteTopBar({
+export const NoteTopBar = memo(function NoteTopBar({
     saveState,
     focusMode,
     onToggleSidebar,
@@ -53,4 +54,4 @@ export function NoteTopBar({
             </div>
         </div>
     );
-}
+});
